@@ -1,5 +1,6 @@
 package ru.skypro.homework.controller;
 
+import lombok.RequiredArgsConstructor;
 import ru.skypro.homework.dto.NewPassword;
 import ru.skypro.homework.dto.UpdateUser;
 import ru.skypro.homework.dto.User;
@@ -11,12 +12,18 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import ru.skypro.homework.repository.UserRepository;
+import ru.skypro.homework.service.UserMapperService;
 
 import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/users")
+@RequiredArgsConstructor
 public class UsersController {
+
+    private final UserRepository userRepository;
+    private final UserMapperService userMapperService;
 
     @Operation(summary = "Обновление пароля", description = "Смена текущего пароля на новый")
     @ApiResponses(value = {

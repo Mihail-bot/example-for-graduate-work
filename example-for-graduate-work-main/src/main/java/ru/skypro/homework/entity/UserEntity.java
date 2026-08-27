@@ -10,17 +10,17 @@ import java.util.List;
 @Table(name = "users")
 @Data
 @NoArgsConstructor
-public class User {
+public class UserEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Column(unique = true, nullable = false)
-    private String email;       // соответствует username
+    private String email;
 
     @Column(nullable = false)
-    private String password;    // храним пароль
+    private String password;
 
     @Column(name = "first_name", nullable = false)
     private String firstName;
@@ -31,13 +31,13 @@ public class User {
     private String phone;
 
     @Column(nullable = false)
-    private String role;        // "USER" или "ADMIN"
+    private String role;
 
-    private String image;       // ссылка на аватар
-
-    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Ad> ads;
+    private String image;
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Comment> comments;
+    private List<AdEntity> ads;
+
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CommentEntity> comments;
 }

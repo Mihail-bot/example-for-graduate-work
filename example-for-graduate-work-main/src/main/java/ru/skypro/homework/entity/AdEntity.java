@@ -10,11 +10,11 @@ import java.util.List;
 @Table(name = "ads")
 @Data
 @NoArgsConstructor
-public class Ad {
+public class AdEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer pk;         // id объявления
+    private Integer pk;
 
     @Column(nullable = false)
     private String title;
@@ -25,12 +25,12 @@ public class Ad {
     @Column(nullable = false, length = 64)
     private String description;
 
-    private String image;       // ссылка на картинку
+    private String image;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id", nullable = false)
-    private User author;        // автор объявления
+    private UserEntity author;
 
     @OneToMany(mappedBy = "ad", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Comment> comments;
+    private List<CommentEntity> comments;
 }

@@ -1,21 +1,30 @@
 package ru.skypro.homework.controller;
 
-import ru.skypro.homework.dto.Comment;
-import ru.skypro.homework.dto.Comments;
-import ru.skypro.homework.dto.CreateOrUpdateComment;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.skypro.homework.dto.Comment;
+import ru.skypro.homework.dto.Comments;
+import ru.skypro.homework.dto.CreateOrUpdateComment;
+import ru.skypro.homework.entity.CommentEntity;
+import ru.skypro.homework.repository.CommentRepository;
+import ru.skypro.homework.service.CommentMapperService;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/ads/{adId}/comments")
+@RequiredArgsConstructor
 public class CommentsController {
+
+    private final CommentRepository commentRepository;
+    private final CommentMapperService commentMapperService;
 
     @Operation(summary = "Получение комментариев объявления")
     @ApiResponses(value = {
@@ -26,10 +35,12 @@ public class CommentsController {
     })
     @GetMapping
     public ResponseEntity<Comments> getComments(@PathVariable Integer adId) {
-        Comments comments = new Comments();
-        comments.setCount(0);
-        comments.setResults(java.util.Collections.emptyList());
-        return ResponseEntity.ok(comments);
+        List<CommentEntity> comments = commentRepository.findByAdPk(adId);
+        List<Comment> dtos = commentMapperService.toDtoList(comments);
+        Comments response = new Comments();
+        response.setCount(dtos.size());
+        response.setResults(dtos);
+        return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "Добавление комментария к объявлению")
@@ -42,7 +53,6 @@ public class CommentsController {
     @PostMapping
     public ResponseEntity<Comment> addComment(@PathVariable Integer adId,
                                               @Valid @RequestBody CreateOrUpdateComment comment) {
-        // поле text обязательно (проверяется @NotBlank)
         return ResponseEntity.ok(new Comment());
     }
 

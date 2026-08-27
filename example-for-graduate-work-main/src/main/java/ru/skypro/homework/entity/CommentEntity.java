@@ -11,24 +11,24 @@ import java.time.LocalDateTime;
 @Table(name = "comments")
 @Data
 @NoArgsConstructor
-public class Comment {
+public class CommentEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer pk;         // id комментария
+    private Integer pk;
 
     @Column(nullable = false, length = 64)
     private String text;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;  // будет хранить дату и время
+    private LocalDateTime createdAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id", nullable = false)
-    private User author;        // автор комментария
+    private UserEntity author;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ad_id", nullable = false)
-    private Ad ad;              // объявление, к которому относится комментарий
+    private AdEntity ad;
 }

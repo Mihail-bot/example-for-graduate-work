@@ -1,20 +1,33 @@
 package ru.skypro.homework.controller;
 
-import ru.skypro.homework.dto.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import ru.skypro.homework.dto.Ad;
+import ru.skypro.homework.dto.Ads;
+import ru.skypro.homework.dto.CreateOrUpdateAd;
+import ru.skypro.homework.dto.ExtendedAd;
+import ru.skypro.homework.entity.AdEntity;
+import ru.skypro.homework.repository.AdRepository;
+import ru.skypro.homework.service.AdMapperService;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/ads")
+@RequiredArgsConstructor
 public class AdsController {
+
+    private final AdRepository adRepository;
+    private final AdMapperService adMapperService;
 
     @Operation(summary = "Получение всех объявлений")
     @ApiResponses(value = {
@@ -23,10 +36,12 @@ public class AdsController {
     })
     @GetMapping
     public ResponseEntity<Ads> getAllAds() {
-        Ads ads = new Ads();
-        ads.setCount(0);
-        ads.setResults(java.util.Collections.emptyList());
-        return ResponseEntity.ok(ads);
+        List<AdEntity> adEntities = adRepository.findAll();
+        List<Ad> adDtos = adMapperService.toDtoList(adEntities);
+        Ads response = new Ads();
+        response.setCount(adDtos.size());
+        response.setResults(adDtos);
+        return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "Добавление объявления")
@@ -39,8 +54,8 @@ public class AdsController {
     public ResponseEntity<Ad> addAd(
             @RequestPart("properties") @Valid CreateOrUpdateAd properties,
             @RequestPart("image") MultipartFile image) {
-        // обратите внимание: поле image обязательно в спецификации (required: true)
-        return ResponseEntity.status(201).body(new Ad());
+        // Заглушка — позже добавим логику
+        return ResponseEntity.status(HttpStatus.CREATED).body(new Ad());
     }
 
     @Operation(summary = "Получение информации об объявлении по ID")
@@ -52,6 +67,7 @@ public class AdsController {
     })
     @GetMapping("/{id}")
     public ResponseEntity<ExtendedAd> getAds(@PathVariable Integer id) {
+        // Заглушка
         return ResponseEntity.ok(new ExtendedAd());
     }
 
@@ -64,6 +80,7 @@ public class AdsController {
     })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> removeAd(@PathVariable Integer id) {
+        // Заглушка
         return ResponseEntity.noContent().build();
     }
 
@@ -78,6 +95,7 @@ public class AdsController {
     @PatchMapping("/{id}")
     public ResponseEntity<Ad> updateAds(@PathVariable Integer id,
                                         @Valid @RequestBody CreateOrUpdateAd updateAd) {
+        // Заглушка
         return ResponseEntity.ok(new Ad());
     }
 
@@ -89,10 +107,11 @@ public class AdsController {
     })
     @GetMapping("/me")
     public ResponseEntity<Ads> getAdsMe() {
-        Ads ads = new Ads();
-        ads.setCount(0);
-        ads.setResults(java.util.Collections.emptyList());
-        return ResponseEntity.ok(ads);
+        // Заглушка
+        Ads response = new Ads();
+        response.setCount(0);
+        response.setResults(List.of());
+        return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "Обновление картинки объявления")
@@ -106,6 +125,7 @@ public class AdsController {
     @PatchMapping(value = "/{id}/image", consumes = "multipart/form-data")
     public ResponseEntity<byte[]> updateImage(@PathVariable Integer id,
                                               @RequestPart("image") MultipartFile image) {
+        // Заглушка
         return ResponseEntity.ok(new byte[0]);
     }
 }

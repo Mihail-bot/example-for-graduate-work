@@ -1,6 +1,7 @@
 package ru.skypro.homework.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import  ru.skypro.homework.dto.Login;
 import  ru.skypro.homework.dto.Register;
 import io.swagger.v3.oas.annotations.Operation;
@@ -29,8 +30,9 @@ public class AuthController {
     })
     @PostMapping("/register")
     public ResponseEntity<Void> register(@Valid @RequestBody Register register) {
-        // заглушка
-        return ResponseEntity.status(201).build();
+        boolean created = authService.register(register);
+        return created ? ResponseEntity.status(HttpStatus.CREATED).build()
+                : ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
     @Operation(summary = "Авторизация пользователя", description = "Вход в систему")
@@ -40,7 +42,8 @@ public class AuthController {
     })
     @PostMapping("/login")
     public ResponseEntity<Void> login(@Valid @RequestBody Login login) {
-        // заглушка
-        return ResponseEntity.ok().build();
+        boolean authenticated = authService.login(login.getUsername(), login.getPassword());
+        return authenticated ? ResponseEntity.ok().build()
+                : ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 }

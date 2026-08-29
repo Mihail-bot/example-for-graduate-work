@@ -2,6 +2,7 @@ package ru.skypro.homework.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 import ru.skypro.homework.dto.Ad;
 import ru.skypro.homework.dto.CreateOrUpdateAd;
 import ru.skypro.homework.dto.ExtendedAd;
@@ -13,10 +14,10 @@ import java.util.stream.Collectors;
 @Mapper(componentModel = "spring")
 public interface AdMapper {
 
-    // Создание сущности из DTO (автоматически)
+    // Создание сущности из DTO
     AdEntity toEntity(CreateOrUpdateAd dto);
 
-    // Ручное преобразование в краткий DTO
+    // Ручное преобразование в краткий DTO (избегаем @Mapping проблем)
     default Ad toDto(AdEntity entity) {
         if (entity == null) return null;
         Ad dto = new Ad();
@@ -24,7 +25,6 @@ public interface AdMapper {
         dto.setTitle(entity.getTitle());
         dto.setPrice(entity.getPrice());
         dto.setImage(entity.getImage());
-        // явно устанавливаем author (id автора)
         dto.setAuthor(entity.getAuthor() != null ? entity.getAuthor().getId() : null);
         return dto;
     }
@@ -47,10 +47,11 @@ public interface AdMapper {
         return dto;
     }
 
-    // Обновление сущности (автоматически)
+    // Обновление сущности – игнорируем null поля (защита от затирания)
+    @org.mapstruct.BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateEntity(@MappingTarget AdEntity entity, CreateOrUpdateAd dto);
 
-    // Преобразование списка
+    // Преобразование списка (можно оставить автоматическое, но проще через default)
     default List<Ad> toDtoList(List<AdEntity> entities) {
         return entities.stream()
                 .map(this::toDto)

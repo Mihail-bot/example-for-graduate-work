@@ -23,17 +23,16 @@ public class AuthController {
 
     private final AuthService authService;
 
-    @Operation(summary = "Регистрация пользователя", description = "Создание нового пользователя")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Пользователь создан"),
-            @ApiResponse(responseCode = "400", description = "Некорректные данные")
-    })
     @PostMapping("/register")
     public ResponseEntity<Void> register(@Valid @RequestBody Register register) {
         boolean created = authService.register(register);
-        return created ? ResponseEntity.status(HttpStatus.CREATED).build()
-                : ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        if (created) {
+            return ResponseEntity.status(HttpStatus.CREATED).build();
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
     }
+
 
     @Operation(summary = "Авторизация пользователя", description = "Вход в систему")
     @ApiResponses(value = {

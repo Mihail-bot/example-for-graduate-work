@@ -1,7 +1,9 @@
 package ru.skypro.homework.mapper;
 
+import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 import ru.skypro.homework.dto.Comment;
 import ru.skypro.homework.dto.CreateOrUpdateComment;
 import ru.skypro.homework.entity.CommentEntity;
@@ -20,11 +22,10 @@ public interface CommentMapper {
         Comment dto = new Comment();
         dto.setPk(entity.getPk());
         dto.setText(entity.getText());
-        // преобразование времени в миллисекунды
+        // преобразование createdAt в миллисекунды
         if (entity.getCreatedAt() != null) {
             dto.setCreatedAt(entity.getCreatedAt().toInstant(ZoneOffset.UTC).toEpochMilli());
         }
-        // поля автора
         if (entity.getAuthor() != null) {
             dto.setAuthor(entity.getAuthor().getId());
             dto.setAuthorFirstName(entity.getAuthor().getFirstName());
@@ -33,6 +34,7 @@ public interface CommentMapper {
         return dto;
     }
 
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateEntity(@MappingTarget CommentEntity entity, CreateOrUpdateComment dto);
 
     default List<Comment> toDtoList(List<CommentEntity> entities) {

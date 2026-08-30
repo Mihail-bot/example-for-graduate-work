@@ -14,6 +14,11 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -26,40 +31,40 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf().disable()
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                .cors().configurationSource(corsConfigurationSource()) // включаем CORS
                 .and()
+                .csrf().disable() // обязательно отключить CSRF для REST API
                 .authorizeHttpRequests(auth -> auth
-                        // Публичные эндпоинты
                         .mvcMatchers("/register", "/login").permitAll()
                         .mvcMatchers(HttpMethod.GET, "/ads", "/ads/{id}").permitAll()
-                        .mvcMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
-
-                        // Требуют аутентификации
-                        .mvcMatchers("/ads/**").authenticated()
-                        .mvcMatchers("/users/**").authenticated()
-                        .mvcMatchers("/ads/*/comments/**").authenticated()
-
-                        // Админка
-                        .mvcMatchers("/admin/**").hasRole("ADMIN")
-
+                        .mvcMatchers("/uploads/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .httpBasic()
                 .and()
                 .userDetailsService(userDetailsService);
-
         return http.build();
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-        return config.getAuthenticationManager();
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        // Разрешаем запросы с фронтенда
+        configuration.setAllowedOrigins(List.of("http://localhost:3000", "http://localhost:5173"));
+        // Разрешаем все методы, нужные для REST
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+        // Разрешаем все заголовки
+        configuration.setAllowedHeaders(List.of("*"));
+        // Разрешаем отправку кук/авторизационных данных
+        configuration.setAllowCredentials(true);
+        // Применяем ко всем эндпоинтам
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
-
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 }
+

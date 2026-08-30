@@ -13,15 +13,11 @@ public interface UserMapper {
     UserEntity toEntity(Register register);
 
     default User toDto(UserEntity entity) {
-        if (entity == null) return null;
         User dto = new User();
-        dto.setId(entity.getId());
-        dto.setEmail(entity.getEmail());
-        dto.setFirstName(entity.getFirstName());
-        dto.setLastName(entity.getLastName());
-        dto.setPhone(entity.getPhone());
-        dto.setRole(entity.getRole());
-        dto.setImage(entity.getImage());
+        // ... другие поля
+        if (entity.getImage() != null) {
+            dto.setImage("/uploads/" + entity.getImage());
+        }
         return dto;
     }
 

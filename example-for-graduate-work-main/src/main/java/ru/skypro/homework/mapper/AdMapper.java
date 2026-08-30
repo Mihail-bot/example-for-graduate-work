@@ -24,7 +24,7 @@ public interface AdMapper {
         dto.setPk(entity.getPk());
         dto.setTitle(entity.getTitle());
         dto.setPrice(entity.getPrice());
-        dto.setImage(entity.getImage());
+        dto.setImage("/uploads/" + entity.getImage());
         dto.setAuthor(entity.getAuthor() != null ? entity.getAuthor().getId() : null);
         return dto;
     }
@@ -36,7 +36,7 @@ public interface AdMapper {
         dto.setPk(entity.getPk());
         dto.setTitle(entity.getTitle());
         dto.setPrice(entity.getPrice());
-        dto.setImage(entity.getImage());
+        dto.setImage("/uploads/" + entity.getImage());
         dto.setDescription(entity.getDescription());
         if (entity.getAuthor() != null) {
             dto.setAuthorFirstName(entity.getAuthor().getFirstName());

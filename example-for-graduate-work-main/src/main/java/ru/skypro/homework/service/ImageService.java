@@ -1,5 +1,6 @@
 package ru.skypro.homework.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -12,6 +13,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 
 @Service
+@Slf4j
 public class ImageService {
 
     @Value("${app.upload.dir:uploads}")
@@ -43,10 +45,12 @@ public class ImageService {
         try {
             Path fullPath = Paths.get(uploadDir, relativePath);
             if (!Files.exists(fullPath)) {
+                log.warn("Image not found: {}", fullPath);
                 return new byte[0];
             }
             return Files.readAllBytes(fullPath);
         } catch (IOException e) {
+            log.error("Failed to read image: {}", e.getMessage());
             throw new RuntimeException("Failed to read image", e);
         }
     }

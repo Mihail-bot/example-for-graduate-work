@@ -35,9 +35,10 @@ public class WebSecurityConfig {
                 .and()
                 .csrf().disable() // обязательно отключить CSRF для REST API
                 .authorizeHttpRequests(auth -> auth
+                        .mvcMatchers("/uploads/**").permitAll()
                         .mvcMatchers("/register", "/login").permitAll()
                         .mvcMatchers(HttpMethod.GET, "/ads", "/ads/{id}").permitAll()
-                        .mvcMatchers("/uploads/**").permitAll()
+
                         .anyRequest().authenticated()
                 )
                 .httpBasic()
